@@ -59,12 +59,8 @@
                                       com.google.cloud.vision.v1.Feature$Type/IMAGE_PROPERTIES))
 
 
-(defn read-from-file
-  [path]
-  (with-open [xin (io/input-stream path)]
-    (AnnotateImageResponse/parseFrom xin)))
-
 (defn parse-response
+  "Make AnnotateImageResponse object into Clojure map"
   [response-object]
   (with-open [xout (new java.io.ByteArrayOutputStream)]
     (let [cos (CodedOutputStream/newInstance xout)]
@@ -82,3 +78,21 @@
       (protobuf-load protobuf-def raw-bytes)
       )
     ))
+
+
+(defn read-object-from-file
+  "Read AnnotateImageResponse from file"
+  [path]
+  (with-open [xin (io/input-stream path)]
+    (AnnotateImageResponse/parseFrom xin)))
+
+(defn write-object-to-file
+  "Write AnnotateImageResponse to file"
+  [path response-object image-name]
+  (let [target-file (new java.io.File path image-name)]
+    (with-open [xout (new java.io.FileOutputStream target-file)]
+      (let [cos (CodedOutputStream/newInstance xout)]
+        (.writeTo response-object cos)
+        (.flush cos)
+        ))))
+
