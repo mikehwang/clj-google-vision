@@ -1,6 +1,6 @@
 # clj-google-vision
 
-A Clojure library designed to ... well, that part is up to you.
+Clojure library to use the [Google vision API](https://cloud.google.com/vision/) in Clojure data structures.
 
 ## Usage
 

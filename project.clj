@@ -1,5 +1,5 @@
 (defproject clj-google-vision "0.1.0"
-  :description "Google vision library in Clojure"
+  :description "Clojure implementation of the Google vision library"
   :url "http://example.com/FIXME"
   :license {:name "The MIT License"
             :url "http://opensource.org/licenses/MIT"
