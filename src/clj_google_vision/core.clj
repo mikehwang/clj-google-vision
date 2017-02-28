@@ -1,15 +1,18 @@
 (ns clj-google-vision.core
   (:require [taoensso.timbre :as timbre :refer [info error]]
             [clojure.java.io :as io]
+            [flatland.protobuf.core :refer [protobuf-load]]
             )
   (:import (com.google.cloud.vision.spi.v1 ImageAnnotatorClient)
            (com.google.protobuf ByteString)
+           (com.google.protobuf CodedOutputStream)
            (java.io FileInputStream)
            (com.google.cloud.vision.v1 AnnotateImageRequest)
            (com.google.cloud.vision.v1 AnnotateImageResponse)
            (com.google.cloud.vision.v1 BatchAnnotateImagesResponse)
            (com.google.cloud.vision.v1 Image)
            (com.google.cloud.vision.v1 Feature)
+           (flatland.protobuf PersistentProtocolBufferMap$Def)
            )
   )
 
@@ -60,3 +63,22 @@
   [path]
   (with-open [xin (io/input-stream path)]
     (AnnotateImageResponse/parseFrom xin)))
+
+(defn parse-response
+  [response-object]
+  (with-open [xout (new java.io.ByteArrayOutputStream)]
+    (let [cos (CodedOutputStream/newInstance xout)]
+      (.writeTo response-object cos)
+      (.flush cos)
+      )
+
+    (let [protobuf-size (.size xout)
+          protobuf-def (PersistentProtocolBufferMap$Def/create
+                         (AnnotateImageResponse/getDescriptor)
+                         PersistentProtocolBufferMap$Def/protobufNames
+                         protobuf-size)
+          raw-bytes (.toByteArray xout)
+          ]
+      (protobuf-load protobuf-def raw-bytes)
+      )
+    ))
